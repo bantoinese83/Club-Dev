@@ -89,3 +89,237 @@ NEXT_PUBLIC_APP_URL="your_app_url"
     npm run dev
     ``` 
    
+
+## API Endpoints
+
+<table>
+  <thead>
+    <tr>
+      <th>API Endpoint</th>
+      <th>Method</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>/api/achievements</td>
+      <td>GET</td>
+      <td>Fetch all achievements for the authenticated user</td>
+    </tr>
+    <tr>
+      <td>/api/ai/chat</td>
+      <td>POST</td>
+      <td>Handle AI chat requests</td>
+    </tr>
+    <tr>
+      <td>/api/ai/code-review</td>
+      <td>POST</td>
+      <td>Generate code review using AI</td>
+    </tr>
+    <tr>
+      <td>/api/ai/generate-code</td>
+      <td>POST</td>
+      <td>Generate code using AI</td>
+    </tr>
+    <tr>
+      <td>/api/ai/generate-mindmap</td>
+      <td>POST</td>
+      <td>Generate mind map using AI</td>
+    </tr>
+    <tr>
+      <td>/api/ai/generate-prompt</td>
+      <td>POST</td>
+      <td>Generate prompt using AI</td>
+    </tr>
+    <tr>
+      <td>/api/ai/programming-chat</td>
+      <td>POST</td>
+      <td>Handle programming chat requests using AI</td>
+    </tr>
+    <tr>
+      <td>/api/ai/writing-assistant</td>
+      <td>POST</td>
+      <td>Handle writing assistant requests using AI</td>
+    </tr>
+    <tr>
+      <td>/api/analytics</td>
+      <td>GET</td>
+      <td>Fetch analytics data</td>
+    </tr>
+    <tr>
+      <td>/api/auth/[...nextauth]</td>
+      <td>POST</td>
+      <td>Handle authentication</td>
+    </tr>
+    <tr>
+      <td>/api/auth/signup</td>
+      <td>POST</td>
+      <td>Handle user signup</td>
+    </tr>
+    <tr>
+      <td>/api/categories</td>
+      <td>GET</td>
+      <td>Fetch all categories</td>
+    </tr>
+    <tr>
+      <td>/api/challenges</td>
+      <td>GET</td>
+      <td>Fetch all challenges for the authenticated user</td>
+    </tr>
+    <tr>
+      <td>/api/challenges</td>
+      <td>POST</td>
+      <td>Create a new challenge</td>
+    </tr>
+    <tr>
+      <td>/api/challenges/:id</td>
+      <td>PUT</td>
+      <td>Update challenge completion status</td>
+    </tr>
+    <tr>
+      <td>/api/create-checkout-session</td>
+      <td>POST</td>
+      <td>Create a new Stripe checkout session</td>
+    </tr>
+    <tr>
+      <td>/api/entries/:id/comments</td>
+      <td>POST</td>
+      <td>Add a comment to an entry</td>
+    </tr>
+    <tr>
+      <td>/api/entries/:id/flag</td>
+      <td>POST</td>
+      <td>Flag an entry</td>
+    </tr>
+    <tr>
+      <td>/api/entries/:id/like</td>
+      <td>POST</td>
+      <td>Like an entry</td>
+    </tr>
+    <tr>
+      <td>/api/entries/:id/peer-review</td>
+      <td>POST</td>
+      <td>Add a peer review to an entry</td>
+    </tr>
+    <tr>
+      <td>/api/entries/:id/pinned</td>
+      <td>POST</td>
+      <td>Pin an entry</td>
+    </tr>
+    <tr>
+      <td>/api/entries/:id/recent</td>
+      <td>GET</td>
+      <td>Fetch recent entries</td>
+    </tr>
+    <tr>
+      <td>/api/gamification/leaderboard</td>
+      <td>GET</td>
+      <td>Fetch the leaderboard</td>
+    </tr>
+    <tr>
+      <td>/api/gamification/update-points</td>
+      <td>POST</td>
+      <td>Update user points</td>
+    </tr>
+    <tr>
+      <td>/api/gamification/user-data</td>
+      <td>GET</td>
+      <td>Fetch user gamification data</td>
+    </tr>
+    <tr>
+      <td>/api/github/commits</td>
+      <td>GET</td>
+      <td>Fetch GitHub commits</td>
+    </tr>
+    <tr>
+      <td>/api/github/repositories</td>
+      <td>GET</td>
+      <td>Fetch GitHub repositories</td>
+    </tr>
+    <tr>
+      <td>/api/github/leaderboard</td>
+      <td>GET</td>
+      <td>Fetch GitHub leaderboard</td>
+    </tr>
+    <tr>
+      <td>/api/mindmaps/:id/share</td>
+      <td>POST</td>
+      <td>Share a mind map</td>
+    </tr>
+    <tr>
+      <td>/api/moderation</td>
+      <td>POST</td>
+      <td>Handle moderation requests</td>
+    </tr>
+    <tr>
+      <td>/api/notifications</td>
+      <td>GET</td>
+      <td>Fetch user notifications</td>
+    </tr>
+    <tr>
+      <td>/api/notion/pages</td>
+      <td>GET</td>
+      <td>Fetch Notion pages</td>
+    </tr>
+    <tr>
+      <td>/api/recommendations</td>
+      <td>GET</td>
+      <td>Fetch recommendations</td>
+    </tr>
+    <tr>
+      <td>/api/search</td>
+      <td>GET</td>
+      <td>Search entries</td>
+    </tr>
+    <tr>
+      <td>/api/subscription/downgrade</td>
+      <td>POST</td>
+      <td>Downgrade user subscription</td>
+    </tr>
+    <tr>
+      <td>/api/topic-clusters</td>
+      <td>GET</td>
+      <td>Fetch topic clusters</td>
+    </tr>
+    <tr>
+      <td>/api/upload</td>
+      <td>POST</td>
+      <td>Handle file uploads</td>
+    </tr>
+    <tr>
+      <td>/api/user/animation-preference</td>
+      <td>GET</td>
+      <td>Get the animation preference of the authenticated user</td>
+    </tr>
+    <tr>
+      <td>/api/user/animation-preference</td>
+      <td>POST</td>
+      <td>Update the animation preference of the authenticated user</td>
+    </tr>
+    <tr>
+      <td>/api/user/streak</td>
+      <td>GET</td>
+      <td>Fetch user streak data</td>
+    </tr>
+    <tr>
+      <td>/api/users/:id/follow</td>
+      <td>POST</td>
+      <td>Follow a user</td>
+    </tr>
+    <tr>
+      <td>/api/users/:id/profile</td>
+      <td>GET</td>
+      <td>Fetch user profile</td>
+    </tr>
+    <tr>
+      <td>/api/users/:id/reputation</td>
+      <td>GET</td>
+      <td>Fetch user reputation</td>
+    </tr>
+    <tr>
+      <td>/api/webhook</td>
+      <td>POST</td>
+      <td>Handle Stripe webhook events</td>
+    </tr>
+  </tbody>
+</table>
