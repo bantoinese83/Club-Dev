@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { prisma } from '@/lib/db';
+import {NextResponse} from 'next/server';
+import {getServerSession} from 'next-auth/next';
+import {prisma} from '@/lib/db';
 
 interface ExtendedUser {
   id: string;
@@ -62,7 +62,7 @@ export async function GET(req: Request) {
 
     const totalEntries = await prisma.entry.count({ where: whereClause });
 
-    const response = new NextResponse(JSON.stringify({
+    return new NextResponse(JSON.stringify({
       entries,
       totalPages: Math.ceil(totalEntries / limit),
       currentPage: page,
@@ -72,7 +72,6 @@ export async function GET(req: Request) {
         'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
       },
     })
-    return response
   } catch (error) {
     console.error('Error fetching entries:', error);
     return NextResponse.json({ error: 'Failed to fetch entries' }, { status: 500 });

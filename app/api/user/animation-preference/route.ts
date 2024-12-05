@@ -1,3 +1,4 @@
+// app/api/user/animation-preference/route.ts
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { prisma } from '@/lib/db'
@@ -9,7 +10,7 @@ interface ExtendedUser extends User {
 
 export async function GET() {
   const session = await getServerSession() as { user: ExtendedUser | null };
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -18,12 +19,16 @@ export async function GET() {
     select: { reducedMotion: true },
   })
 
-  return NextResponse.json({ reducedMotion: user?.reducedMotion || false })
+  if (!user) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  }
+
+  return NextResponse.json({ reducedMotion: user.reducedMotion })
 }
 
 export async function POST(req: Request) {
   const session = await getServerSession() as { user: ExtendedUser | null };
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

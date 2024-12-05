@@ -20,7 +20,6 @@ import { createNotionPage, getNotionClient } from "@/lib/notion";
 import { User } from "next-auth";
 import { Session } from "next-auth";
 import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import {useRichTextEditorContext} from "@/contexts/RichTextEditorContext";
 import {checkAndUnlockAchievements} from "@/lib/achievements";
 
 dynamic<FileUploadProps>(() => import('./FileUpload').then(mod => mod.FileUpload), { ssr: false });
@@ -48,7 +47,13 @@ interface Repository {
   full_name: string;
 }
 
-export function RichTextEditor({ initialContent = '' }: { initialContent?: string }) {
+interface RichTextEditorProps {
+  initialContent?: string;
+  onSave: (content: string) => void;
+  onCancel: () => void;
+}
+
+export function RichTextEditor({ initialContent = '', onSave, onCancel }: RichTextEditorProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState(initialContent);
   const [tags, setTags] = useState<string[]>([]);
@@ -65,82 +70,81 @@ export function RichTextEditor({ initialContent = '' }: { initialContent?: strin
   const { fetchEntries } = useAppContext();
   const editorRef = useRef<HTMLDivElement | null>(null);
   const { data: session } = useSession() as { data: ExtendedSession | null };
-  const { onSave, onCancel } = useRichTextEditorContext();
 
   useEffect(() => {
     setContent(initialContent);
   }, [initialContent]);
 
-const handleSaveEntry = async () => {
-  if (!title) {
-    toast({
-      title: 'Error',
-      description: 'Please enter a title for your entry.',
-      variant: 'destructive',
-    });
-    return;
-  }
-
-  try {
-    let githubIssueUrl = null;
-    let notionPageId = null;
-
-    if (selectedRepo) {
-      const [owner, repo] = selectedRepo.split('/');
-      const github = getGitHubClient(session!.user.githubAccessToken!);
-      const issue = await createGitHubIssue(github, owner, repo, title, content);
-      githubIssueUrl = issue.data.html_url;
+  const handleSaveEntry = async () => {
+    if (!title) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a title for your entry.',
+        variant: 'destructive',
+      });
+      return;
     }
 
-    if (selectedNotionPage) {
-      const page = await createNotionPage(session!.user.notionAccessToken!, title, content);
-      notionPageId = page.id;
+    try {
+      let githubIssueUrl = null;
+      let notionPageId = null;
+
+      if (selectedRepo) {
+        const [owner, repo] = selectedRepo.split('/');
+        const github = getGitHubClient(session!.user.githubAccessToken!);
+        const issue = await createGitHubIssue(github, owner, repo, title, content);
+        githubIssueUrl = issue.data.html_url;
+      }
+
+      if (selectedNotionPage) {
+        const page = await createNotionPage(session!.user.notionAccessToken!, title, content);
+        notionPageId = page.id;
+      }
+
+      const response = await fetch('/api/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          content,
+          tags,
+          categoryId: null,
+          githubIssueUrl,
+          notionPageId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save entry');
+      }
+
+      // Check and unlock achievements
+      await checkAndUnlockAchievements(session!.user.id);
+
+      toast({
+        title: 'Success',
+        description: 'Entry saved successfully',
+      });
+      fetchEntries();
+      onSave(content);
+
+      setTitle('');
+      setContent('');
+      setTags([]);
+      setSelectedRepo('');
+      setSelectedNotionPage('');
+      setShowCodeEditor(false);
+      setCodeSnippet('');
+    } catch (error: any) {
+      console.error('Error saving entry:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to save entry. Please try again.',
+        variant: 'destructive',
+      });
     }
-
-    const response = await fetch('/api/entries', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        title,
-        content,
-        tags,
-        categoryId: null,
-        githubIssueUrl,
-        notionPageId,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to save entry');
-    }
-
-    // Check and unlock achievements
-    await checkAndUnlockAchievements(session!.user.id);
-
-    toast({
-      title: 'Success',
-      description: 'Entry saved successfully',
-    });
-    fetchEntries();
-    onSave(content);
-
-    setTitle('');
-    setContent('');
-    setTags([]);
-    setSelectedRepo('');
-    setSelectedNotionPage('');
-    setShowCodeEditor(false);
-    setCodeSnippet('');
-  } catch (error: any) {
-    console.error('Error saving entry:', error);
-    toast({
-      title: 'Error',
-      description: error.message || 'Failed to save entry. Please try again.',
-      variant: 'destructive',
-    });
-  }
-};
+  };
 
   const handleAIAction = async (action: 'suggest' | 'summarize') => {
     try {

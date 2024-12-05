@@ -1,4 +1,3 @@
-// JournalPage.tsx
 'use client'
 import React, {useState, useEffect, Suspense, useCallback} from 'react';
 import dynamic from 'next/dynamic';
@@ -19,6 +18,7 @@ import {toast} from '@/hooks/use-toast';
 import {Entry} from "@/app/types/types";
 import {StreakChallenge} from '@/components/StreakChallenge';
 import {UserProgress} from '@/components/UserProgress';
+import {RichTextEditorProvider} from '@/contexts/RichTextEditorContext';
 
 type Category = {
     id: string;
@@ -44,7 +44,6 @@ interface RichTextEditorProps {
 }
 
 const RichTextEditor = dynamic<RichTextEditorProps>(() => import('@/components/RichTextEditor').then(mod => mod.RichTextEditor), {
-    suspense: true,
     loading: () => <p>Loading editor...</p>,
 });
 
@@ -171,8 +170,7 @@ export default function JournalPage() {
                                 </CardHeader>
                                 <CardContent>
                                     <Suspense fallback={<p>Loading...</p>}>
-                                        <RichTextEditor
-                                            initialContent=""
+                                        <RichTextEditorProvider
                                             onSave={async (content: string) => {
                                                 try {
                                                     const response = await fetch('/api/entries', {
@@ -201,8 +199,16 @@ export default function JournalPage() {
                                                 }
                                             }}
                                             onCancel={() => {
+                                                // Do nothing
                                             }}
-                                        />
+                                        >
+                                            <RichTextEditor initialContent=""
+                                                            onSave={function (content: string): Promise<void> {
+                                                                throw new Error('Function not implemented.');
+                                                            }} onCancel={function (): void {
+                                                throw new Error('Function not implemented.');
+                                            }}/>
+                                        </RichTextEditorProvider>
                                     </Suspense>
                                 </CardContent>
                             </Card>

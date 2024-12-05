@@ -21,9 +21,24 @@ app.prepare().then(() => {
 
   const io = initializeWebSocketServer(server);
 
-  io.on('connection', () => {
+  io.on('connection', (socket) => {
     console.log('New WebSocket connection');
-    // Handle WebSocket events here
+
+    socket.on('message', (msg) => {
+      console.log('Received message:', msg);
+    });
+
+    socket.on('joinEntry', (entryId) => {
+      socket.join(`entry:${entryId}`);
+    });
+
+    socket.on('leaveEntry', (entryId) => {
+      socket.leave(`entry:${entryId}`);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('A user disconnected');
+    });
   });
 
   server.listen(3000, () => {

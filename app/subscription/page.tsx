@@ -1,13 +1,11 @@
 'use client'
-import React from 'react';
-
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
-import {useToast} from "@/hooks/use-toast";
+import { Loader2, CheckCircle, Star, Users, Shield } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -15,17 +13,31 @@ const tiers = [
   {
     name: 'Free',
     price: 'free',
-    features: ['Basic journal entries', 'Limited AI assistance', 'Public feed access'],
+    features: [
+      { icon: <CheckCircle className="w-4 h-4 mr-2" />, text: 'Basic journal entries' },
+      { icon: <CheckCircle className="w-4 h-4 mr-2" />, text: 'Limited AI assistance' },
+      { icon: <CheckCircle className="w-4 h-4 mr-2" />, text: 'Public feed access' },
+    ],
   },
   {
     name: 'Pro',
     price: 'price_1NcXxXXXXXXXXXXXXXXXXXXX',
-    features: ['Unlimited journal entries', 'Full AI assistance', 'Code review', 'Advanced analytics'],
+    features: [
+      { icon: <Star className="w-4 h-4 mr-2" />, text: 'Unlimited journal entries' },
+      { icon: <Star className="w-4 h-4 mr-2" />, text: 'Full AI assistance' },
+      { icon: <Star className="w-4 h-4 mr-2" />, text: 'Code review' },
+      { icon: <Star className="w-4 h-4 mr-2" />, text: 'Advanced analytics' },
+    ],
   },
   {
     name: 'Enterprise',
     price: 'price_1NcXxYYYYYYYYYYYYYYYYYYY',
-    features: ['All Pro features', 'Team collaboration', 'Priority support', 'Custom integrations'],
+    features: [
+      { icon: <Users className="w-4 h-4 mr-2" />, text: 'All Pro features' },
+      { icon: <Users className="w-4 h-4 mr-2" />, text: 'Team collaboration' },
+      { icon: <Shield className="w-4 h-4 mr-2" />, text: 'Priority support' },
+      { icon: <Shield className="w-4 h-4 mr-2" />, text: 'Custom integrations' },
+    ],
   },
 ];
 
@@ -37,7 +49,6 @@ export default function SubscriptionPage() {
 
   const handleSubscription = async (priceId: string) => {
     if (priceId === 'free') {
-      // Handle free tier selection
       try {
         const response = await fetch('/api/subscription/downgrade', {
           method: 'POST',
@@ -115,8 +126,11 @@ export default function SubscriptionPage() {
             <CardContent>
               <p className="text-xl font-bold mb-4">{tier.price === 'free' ? 'Free' : `$${parseInt(tier.price.split('_')[1]) / 100}/month`}</p>
               <ul className="list-disc list-inside space-y-2 text-gray-300">
-                {tier.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
+                {tier.features.map((feature, index) => (
+                  <li key={index} className="flex items-center">
+                    {feature.icon}
+                    {feature.text}
+                  </li>
                 ))}
               </ul>
             </CardContent>
@@ -138,4 +152,3 @@ export default function SubscriptionPage() {
     </div>
   );
 }
-

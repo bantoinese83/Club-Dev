@@ -1,9 +1,8 @@
-'use client'
-
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {useToast} from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type Category = {
   id: string
@@ -14,9 +13,10 @@ type Category = {
 type CategoryManagerProps = {
   categories: Category[]
   onCategoryAdded: () => void
+  onCategorySelected: (categoryId: string) => void
 }
 
-export function CategoryManager({ categories, onCategoryAdded }: CategoryManagerProps) {
+export function CategoryManager({ categories, onCategoryAdded, onCategorySelected }: CategoryManagerProps) {
   const [newCategory, setNewCategory] = useState('')
   const { toast } = useToast()
 
@@ -55,15 +55,17 @@ export function CategoryManager({ categories, onCategoryAdded }: CategoryManager
         />
         <Button type="submit">Add</Button>
       </form>
-      <ul className="space-y-2">
-        {categories.map(category => (
-          <li key={category.id} className="flex justify-between items-center">
-            <span>{category.name}</span>
-            <span className="text-sm text-muted-foreground">({category._count.entries})</span>
-          </li>
-        ))}
-      </ul>
+      <Select onValueChange={onCategorySelected}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select a category" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Categories</SelectItem>
+          {categories.map(category => (
+            <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }
-

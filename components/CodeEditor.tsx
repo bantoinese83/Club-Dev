@@ -1,11 +1,13 @@
 'use client'
 
-import React, { useRef, useEffect } from 'react'
-import MonacoEditor, { monaco } from 'react-monaco-editor'
+import React, { useRef, useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
+
+const MonacoEditor = dynamic(() => import('react-monaco-editor'), { ssr: false })
 
 interface CodeEditorProps {
   initialCode: string
@@ -20,23 +22,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   onCodeChange,
   onLanguageChange,
 }) => {
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
+  const editorRef = useRef<any>(null)
+  const [editorLoaded, setEditorLoaded] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
-    if (editorRef.current) {
-      const model = editorRef.current.getModel()
-      if (model) {
-        monaco.editor.setModelLanguage(model, language)
-      }
-    }
+    setEditorLoaded(true)
     toast({
       title: 'Editor Loaded',
       description: 'The code editor has been loaded successfully.',
     })
-  }, [language, toast])
+  }, [toast])
 
-  const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor) => {
+  const handleEditorDidMount = (editor: any) => {
     editorRef.current = editor
   }
 
@@ -73,20 +71,22 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             </SelectContent>
           </Select>
         </div>
-        <MonacoEditor
-          width="100%"
-          height="400"
-          language={language}
-          theme="vs-dark"
-          value={initialCode}
-          options={{
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            fontSize: 14,
-          }}
-          onChange={onCodeChange}
-          editorDidMount={handleEditorDidMount}
-        />
+        {editorLoaded && (
+          <MonacoEditor
+            width="100%"
+            height="400"
+            language={language}
+            theme="vs-dark"
+            value={initialCode}
+            options={{
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              fontSize: 14,
+            }}
+            onChange={onCodeChange}
+            editorDidMount={handleEditorDidMount}
+          />
+        )}
         <div className="mt-4">
           <Button onClick={handleCopyCode}>Copy Code</Button>
         </div>
@@ -96,3 +96,4 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 }
 
 export default CodeEditor
+

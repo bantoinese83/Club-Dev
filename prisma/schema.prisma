@@ -16,7 +16,7 @@ model User {
   image               String?
   password            String?
   createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  updatedAt           DateTime           @default(now())
   accounts            Account[]
   sessions            Session[]
   entries             Entry[]
@@ -28,7 +28,7 @@ model User {
   flagsCreated        Flag[]
   reviewsGiven        PeerReview[]       @relation("ReviewerReviews")
   reviewsReceived     PeerReview[]       @relation("AuthorReviews")
-  stripeCustomerId    String?
+  stripeCustomerId    String?            @unique
   subscriptionStatus  SubscriptionStatus @default(INACTIVE)
   subscriptionTier    SubscriptionTier   @default(FREE)
   subscriptionEndDate DateTime?
@@ -47,6 +47,7 @@ model User {
   linkedin            String?
   website             String?
   isPublic            Boolean            @default(true)
+  reducedMotion       Boolean            @default(false)
 
   ChallengeParticipant ChallengeParticipant[]
 }
@@ -92,7 +93,7 @@ model Entry {
   codeSnippet    String?
   codeLanguage   String?
   createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  updatedAt      DateTime     @default(now())
   userId         String
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags           Tag[]
@@ -107,6 +108,8 @@ model Entry {
   mediaUrl       String?
   mediaType      String?
   isPublic       Boolean      @default(true)
+  categoryId     String?
+  category       Category?    @relation(fields: [categoryId], references: [id])
 
   @@index([userId, createdAt])
 }
@@ -259,6 +262,12 @@ model ChallengeParticipant {
   completed   Boolean   @default(false)
 
   @@unique([userId, challengeId])
+}
+
+model Category {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  entries Entry[]
 }
 
 enum SubscriptionStatus {

@@ -15,18 +15,18 @@ export async function getRecommendedEntries(userId: string) {
   const interestNames = userInterests.map((tag: { name: string }) => tag.name)
 
   // Get recommended entries based on user's interests
-  return await prisma.entry.findMany({
+  return prisma.entry.findMany({
     where: {
-      userId: { not: userId },
-      tags: { some: { name: { in: interestNames } } },
+      userId: {not: userId},
+      tags: {some: {name: {in: interestNames}}},
     },
     include: {
-      user: { select: { name: true, image: true } },
+      user: {select: {name: true, image: true}},
       tags: true,
       likes: true,
       comments: true,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: {createdAt: 'desc'},
     take: 10,
-  })
+  });
 }

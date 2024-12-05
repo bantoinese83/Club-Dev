@@ -21,7 +21,7 @@ export async function GET() {
 
   const challenges = await prisma.challenge.findMany({
     include: {
-      participants: {
+      ChallengeParticipant: {
         where: { userId: session.user.id },
         select: {
           completed: true,

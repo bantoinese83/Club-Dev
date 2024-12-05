@@ -6,7 +6,7 @@ import Stripe from "stripe";
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = headers().get('stripe-signature') as string;
+  const signature = (await headers()).get('stripe-signature') as string;
 
   let event;
 
@@ -51,7 +51,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   await prisma.user.update({
     where: { id: userId },
     data: {
-      subscriptionStatus: 'active',
+      subscriptionStatus: 'ACTIVE', // Use the correct enum value
     },
   });
 }
@@ -71,18 +71,18 @@ async function handleSubscriptionUpdated(stripeCustomerId: string) {
   const subscriptionData = subscription.data[0];
   const planProduct = subscriptionData.items.data[0].plan.product as Stripe.Product;
 
-  let subscriptionTier = 'free';
+  let subscriptionTier = 'FREE'; // Default to the correct enum value
   if (planProduct.name.toLowerCase().includes('pro')) {
-    subscriptionTier = 'pro';
+    subscriptionTier = 'PRO';
   } else if (planProduct.name.toLowerCase().includes('enterprise')) {
-    subscriptionTier = 'enterprise';
+    subscriptionTier = 'ENTERPRISE';
   }
 
   await prisma.user.update({
     where: { stripeCustomerId },
     data: {
-      subscriptionStatus: subscriptionData.status,
-      subscriptionTier,
+      subscriptionStatus: subscriptionData.status.toUpperCase() as any, // Convert status to enum value
+      subscriptionTier: subscriptionTier as any, // Use the correct enum value
       subscriptionEndDate: new Date(subscriptionData.current_period_end * 1000),
     },
   });
@@ -92,8 +92,8 @@ async function handleSubscriptionDeleted(stripeCustomerId: string) {
   await prisma.user.update({
     where: { stripeCustomerId },
     data: {
-      subscriptionStatus: 'inactive',
-      subscriptionTier: 'free',
+      subscriptionStatus: 'INACTIVE', // Use the correct enum value
+      subscriptionTier: 'FREE', // Use the correct enum value
       subscriptionEndDate: null,
     },
   });

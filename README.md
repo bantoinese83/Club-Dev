@@ -1,12 +1,11 @@
 # ClubDev: Your Personal Coding Journey Companion
 
-![Build Status](https://img.shields.io/github/actions/workflow/status/your-username/clubdev/ci.yml)
-![License](https://img.shields.io/github/license/your-username/clubdev)
-![npm version](https://img.shields.io/npm/v/clubdev)
-![GitHub contributors](https://img.shields.io/github/contributors/your-username/clubdev)
-![GitHub issues](https://img.shields.io/github/issues/your-username/clubdev)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/your-username/clubdev)
-    
+![Build Status](https://img.shields.io/github/actions/workflow/status/bantoinese83/Club-Dev/ci.yml)
+![License](https://img.shields.io/github/license/bantoinese83/Club-Dev)
+![npm version](https://img.shields.io/npm/v/clubdevbase)
+![GitHub contributors](https://img.shields.io/github/contributors/bantoinese83/Club-Dev)
+![GitHub issues](https://img.shields.io/github/issues/bantoinese83/Club-Dev)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/bantoinese83/Club-Dev)
 
 **Log your progress, connect with the community, and level up your coding skills with ClubDev!**
 

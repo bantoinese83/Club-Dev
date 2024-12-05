@@ -9,12 +9,12 @@ export async function unlockAchievement(userId: string, achievementName: string)
     throw new Error(`Achievement ${achievementName} not found`)
   }
 
-  return await prisma.userAchievement.create({
+  return prisma.userAchievement.create({
     data: {
       userId,
       achievementId: achievement.id,
     },
-  })
+  });
 }
 
 export async function checkAndUnlockAchievements(userId: string) {
