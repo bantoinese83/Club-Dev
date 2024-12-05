@@ -1,0 +1,274 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id                  String             @id @default(cuid())
+  name                String?
+  email               String?            @unique
+  emailVerified       DateTime?
+  image               String?
+  password            String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  accounts            Account[]
+  sessions            Session[]
+  entries             Entry[]
+  likes               Like[]
+  comments            Comment[]
+  followers           Follow[]           @relation("Following")
+  following           Follow[]           @relation("Followers")
+  reputation          Reputation?
+  flagsCreated        Flag[]
+  reviewsGiven        PeerReview[]       @relation("ReviewerReviews")
+  reviewsReceived     PeerReview[]       @relation("AuthorReviews")
+  stripeCustomerId    String?
+  subscriptionStatus  SubscriptionStatus @default(INACTIVE)
+  subscriptionTier    SubscriptionTier   @default(FREE)
+  subscriptionEndDate DateTime?
+  points              Int                @default(0)
+  level               Int                @default(1)
+  experiencePoints    Int                @default(0)
+  currentStreak       Int                @default(0)
+  longestStreak       Int                @default(0)
+  achievements        UserAchievement[]
+  notifications       Notification[]
+  mindMaps            MindMap[]
+  bio                 String?
+  skills              String[]
+  github              String?
+  twitter             String?
+  linkedin            String?
+  website             String?
+  isPublic            Boolean            @default(true)
+
+  ChallengeParticipant ChallengeParticipant[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Entry {
+  id             String       @id @default(cuid())
+  title          String
+  content        String
+  codeSnippet    String?
+  codeLanguage   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags           Tag[]
+  githubIssueUrl String?
+  notionPageId   String?
+  likes          Like[]
+  comments       Comment[]
+  flags          Flag[]
+  peerReviews    PeerReview[]
+  isPinned       Boolean      @default(false)
+  isVoiceNote    Boolean      @default(false)
+  mediaUrl       String?
+  mediaType      String?
+  isPublic       Boolean      @default(true)
+
+  @@index([userId, createdAt])
+}
+
+model Tag {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  entries Entry[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entryId   String
+  entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, entryId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entryId   String
+  entry     Entry    @relation(fields: [entryId], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  id          String @id @default(cuid())
+  follower    User   @relation("Following", fields: [followerId], references: [id])
+  followerId  String
+  following   User   @relation("Followers", fields: [followingId], references: [id])
+  followingId String
+
+  @@unique([followerId, followingId])
+}
+
+model Flag {
+  id        String     @id @default(cuid())
+  reason    String
+  status    FlagStatus @default(PENDING)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  entryId   String
+  entry     Entry      @relation(fields: [entryId], references: [id])
+}
+
+enum FlagStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+model Reputation {
+  id        String   @id @default(cuid())
+  score     Int      @default(0)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model PeerReview {
+  id         String           @id @default(cuid())
+  rating     Int
+  comment    String
+  status     PeerReviewStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @default(now())
+  reviewerId String
+  reviewer   User             @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  entryId    String
+  entry      Entry            @relation(fields: [entryId], references: [id])
+  authorId   String
+  author     User             @relation("AuthorReviews", fields: [authorId], references: [id])
+}
+
+enum PeerReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Achievement {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  description String
+  imageUrl    String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @default(now())
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+
+  ChallengeParticipant ChallengeParticipant[]
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model MindMap {
+  id        String   @id @default(cuid())
+  name      String
+  content   String
+  isPublic  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ChallengeParticipant {
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id])
+  completed   Boolean   @default(false)
+
+  @@unique([userId, challengeId])
+}
+
+enum SubscriptionStatus {
+  INACTIVE
+  ACTIVE
+  CANCELED
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  ENTERPRISE
+}
