@@ -323,3 +323,13 @@ NEXT_PUBLIC_APP_URL="your_app_url"
     </tr>
   </tbody>
 </table>
+
+## GitHub Stats
+
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=bantoinese83&show_icons=true&theme=radical)
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=bantoinese83&layout=compact&theme=radical)
+![GitHub Streak](https://github-readme-streak-stats.herokuapp.com/?user=bantoinese83&theme=radical)
+![GitHub Trophies](https://github-profile-trophy.vercel.app/?username=bantoinese83&theme=radical)
+![GitHub Activity Graph](https://activity-graph.herokuapp.com/graph?username=bantoinese83&theme=react-dark)
+![GitHub Contribution Graph]( https://ghchart.rshah.org/409ba5/bantoinese83)
+![GitHub Readme Stats](https://github-readme-stats.vercel.app/api/pin/?username=bantoinese83&repo=Club-Dev&theme=radical)
